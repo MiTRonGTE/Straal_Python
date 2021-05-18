@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Red
 from datetime import timedelta, date, datetime
 from pytz import timezone
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from typing import Optional, List
+from typing import Optional, List, Literal
 import hashlib
 import string
 import secrets
@@ -22,7 +22,7 @@ import json
 app = FastAPI()
 
 app.all_response = []
-app.fmt = "%Y-%m-%dT%H:%M:%S%z"
+app.date_format = "%Y-%m-%dT%H:%M:%S%z"
 
 
 @app.exception_handler(RequestValidationError)
@@ -32,7 +32,7 @@ async def validation_exception_handler(request, exc):
 
 class PayByLink(BaseModel):
     created_at: str
-    currency: str
+    currency: Literal['EUR','USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     bank: str
@@ -40,7 +40,7 @@ class PayByLink(BaseModel):
 
 class Dp(BaseModel):
     created_at: str
-    currency: str
+    currency: Literal['EUR','USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     iban: constr(max_length=22, min_length=22)
@@ -48,7 +48,7 @@ class Dp(BaseModel):
 
 class Card(BaseModel):
     created_at: str
-    currency: str
+    currency: Literal['EUR','USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     cardholder_name: str
@@ -86,7 +86,7 @@ def get_utc_time(created_at, fmt):
     try:
         iso_time = datetime.strptime(str(created_at), fmt)
         date_utc = iso_time.astimezone(timezone('UTC'))
-        return date_utc.strftime(app.fmt).replace("+0000", "Z")
+        return date_utc.strftime(app.date_format).replace("+0000", "Z")
     except:
         raise HTTPException(status_code=400)
 
@@ -95,9 +95,9 @@ def pay_by_link_requester(pbl):
 
     for i in range(len(pbl)):
         exchange_rate = get_exchange_rate(pbl[i].currency, pbl[i].created_at)
-        date = get_utc_time(pbl[i].created_at, app.fmt)
+        date = get_utc_time(pbl[i].created_at, app.date_format)
 
-        app.all_response.append({
+        app.last_payment_info.append({
             "date": date,
             "type": "pay_by_link",
             "payment_mean": pbl[i].bank,
@@ -111,9 +111,9 @@ def pay_by_link_requester(pbl):
 def dp_requester(dp):
     for i in range(len(dp)):
         exchange_rate = get_exchange_rate(dp[i].currency, dp[i].created_at)
-        date = get_utc_time(dp[i].created_at, app.fmt)
+        date = get_utc_time(dp[i].created_at, app.date_format)
 
-        app.all_response.append({
+        app.last_payment_info.append({
             "date": date,
             "type": "dp",
             "payment_mean": dp[i].iban,
@@ -127,9 +127,9 @@ def dp_requester(dp):
 def card_requester(card):
     for i in range(len(card)):
         exchange_rate = get_exchange_rate(card[i].currency, card[i].created_at)
-        date = get_utc_time(card[i].created_at, app.fmt)
+        date = get_utc_time(card[i].created_at, app.date_format)
 
-        app.all_response.append({
+        app.last_payment_info.append({
             "date": date,
             "type": "card",
             "payment_mean": f"{card[i].cardholder_name.title()} {card[i].cardholder_surname.title()} {card[i].card_number[:4] + 8*'*'+ card[i].card_number[-4:]}",
@@ -142,12 +142,13 @@ def card_requester(card):
 
 @app.post("/report")
 async def report_post_func(rep: RequestReport):
-    app.all_response = []
+    app.last_payment_info = []
     pay_by_link_requester(rep.pay_by_link)
     dp_requester(rep.dp)
     card_requester(rep.card)
-    app.all_response.sort(key=get_date)
-    return app.all_response
+    app.last_payment_info.sort(key=get_date)
+    return app.last_payment_info
 
 
+# sprawdzić czy w card number są tylko cyferki
 
