@@ -10,7 +10,7 @@ from pydantic import BaseModel, constr, NonNegativeInt, PositiveInt
 from pytz import timezone
 import json
 import urllib.request
-import sqlite3
+
 
 
 # uvicorn main:app
@@ -25,7 +25,7 @@ app.date_format = "%Y-%m-%dT%H:%M:%S%z"
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(exc):
+async def validation_exception_handler(request, exc):
     return PlainTextResponse(str(exc), status_code=400)
 
 
@@ -93,115 +93,95 @@ def get_utc_time(created_at, fmt):
         raise HTTPException(status_code=400)
 
 
-def pay_by_link_requester(pbl):
-
-    for i in range(len(pbl)):
-        exchange_rate = get_exchange_rate(pbl[i].currency, pbl[i].created_at)
-        utc_date = get_utc_time(pbl[i].created_at, app.date_format)
+def pay_by_link_requester(pbl_array, raport: bool):
+    for i in range(len(pbl_array)):
+        pbl = pbl_array[i]
+        exchange_rate = get_exchange_rate(pbl.currency, pbl.created_at)
+        utc_date = get_utc_time(pbl.created_at, app.date_format)
         try:
-            if pbl[i].customer_id:
-                app.customer_id = pbl[i].customer_id
-                app.last_payment_info.append({
-                    "customer_id": pbl[i].customer_id,
+            converted_pbl = {}
+            if pbl.customer_id and raport == True:
+                converted_pbl["customer_id"] = pbl.customer_id
+
+            converted_pbl.update({
                     "date": utc_date,
                     "type": "pay_by_link",
-                    "payment_mean": pbl[i].bank,
-                    "description": pbl[i].description,
-                    "currency": pbl[i].currency.upper(),
-                    "amount": pbl[i].amount,
-                    "amount_in_pln": (int(pbl[i].amount) * exchange_rate)//1,
+                    "payment_mean": pbl.bank,
+                    "description": pbl.description,
+                    "currency": pbl.currency.upper(),
+                    "amount": pbl.amount,
+                    "amount_in_pln": (int(pbl.amount) * exchange_rate)//1,
                 })
-            else:
-                app.last_payment_info.append({
-                    "date": utc_date,
-                    "type": "pay_by_link",
-                    "payment_mean": pbl[i].bank,
-                    "description": pbl[i].description,
-                    "currency": pbl[i].currency.upper(),
-                    "amount": pbl[i].amount,
-                    "amount_in_pln": (int(pbl[i].amount) * exchange_rate)//1,
-                })
+            app.last_payment_info.append(converted_pbl)
         except:
             raise HTTPException(status_code=400)
 
 
-def dp_requester(dp):
-    for i in range(len(dp)):
-        exchange_rate = get_exchange_rate(dp[i].currency, dp[i].created_at)
-        utc_date = get_utc_time(dp[i].created_at, app.date_format)
+def dp_requester(dp_array, raport: bool):
+    for i in range(len(dp_array)):
+        dp = dp_array[i]
+
+        exchange_rate = get_exchange_rate(dp.currency, dp.created_at)
+        utc_date = get_utc_time(dp.created_at, app.date_format)
         try:
-            if dp[i].customer_id:
-                app.last_payment_info.append({
-                    "customer_id": dp[i].customer_id,
-                    "date": utc_date,
-                    "type": "dp",
-                    "payment_mean": dp[i].iban,
-                    "description": dp[i].description,
-                    "currency": dp[i].currency.upper(),
-                    "amount": dp[i].amount,
-                    "amount_in_pln": (int(dp[i].amount)*exchange_rate)//1,
-                })
-            else:
-                app.last_payment_info.append({
-                    "date": utc_date,
-                    "type": "dp",
-                    "payment_mean": dp[i].iban,
-                    "description": dp[i].description,
-                    "currency": dp[i].currency.upper(),
-                    "amount": dp[i].amount,
-                    "amount_in_pln": (int(dp[i].amount) * exchange_rate)//1,
-                })
+            converted_dp = {}
+            if dp.customer_id and raport == True:
+                converted_dp["customer_id"] = dp.customer_id
+            converted_dp.update({
+                "date": utc_date,
+                "type": "dp",
+                "payment_mean": dp.iban,
+                "description": dp.description,
+                "currency": dp.currency.upper(),
+                "amount": dp.amount,
+                "amount_in_pln": (int(dp.amount) * exchange_rate)//1,
+            })
+            app.last_payment_info.append(converted_dp)
         except:
             raise HTTPException(status_code=400)
 
 
-def card_requester(card):
-    for i in range(len(card)):
-        exchange_rate = get_exchange_rate(card[i].currency, card[i].created_at)
-        utc_date = get_utc_time(card[i].created_at, app.date_format)
+def card_requester(card_array, raport: bool):
+
+    for i in range(len(card_array)):
+        card = card_array[i]
+
+        exchange_rate = get_exchange_rate(card.currency, card.created_at)
+        utc_date = get_utc_time(card.created_at, app.date_format)
         try:
-            int(card[i].card_number)
-            if card[i].customer_id:
-                app.customer_id = card[i].customer_id
-                app.last_payment_info.append({
-                    "customer_id": card[i].customer_id,
-                    "date": utc_date,
-                    "type": "card",
-                    "payment_mean": f"{card[i].cardholder_name.title()} {card[i].cardholder_surname.title()}"
-                                    f" {card[i].card_number[:4] + 8 * '*' + card[i].card_number[-4:]}",
-                    "description": card[i].description,
-                    "currency": card[i].currency.upper(),
-                    "amount": card[i].amount,
-                    "amount_in_pln": (int(card[i].amount) * exchange_rate) // 1,
-                })
-            else:
-                app.last_payment_info.append({
-                    "date": utc_date,
-                    "type": "card",
-                    "payment_mean": f"{card[i].cardholder_name.title()} {card[i].cardholder_surname.title()}"
-                                    f" {card[i].card_number[:4] + 8 * '*' + card[i].card_number[-4:]}",
-                    "description": card[i].description,
-                    "currency": card[i].currency.upper(),
-                    "amount": card[i].amount,
-                    "amount_in_pln": (int(card[i].amount) * exchange_rate) // 1,
-                })
+            int(card.card_number)
+            converted_card = {}
+            if card.customer_id and raport == True:
+                converted_card["customer_id"] = card.customer_id
+
+            converted_card.update({
+                "date": utc_date,
+                "type": "card",
+                "payment_mean": f"{card.cardholder_name.title()} {card.cardholder_surname.title()}"
+                                f" {card.card_number[:4] + 8 * '*' + card.card_number[-4:]}",
+                "description": card.description,
+                "currency": card.currency.upper(),
+                "amount": card.amount,
+                "amount_in_pln": (int(card.amount) * exchange_rate) // 1,
+            })
+
+            app.last_payment_info.append(converted_card)
         except:
             raise HTTPException(status_code=400)
-
 
 
 @app.post("/report")
 async def report_post_func(report: RequestReport):
     app.last_payment_info = []
-    pay_by_link_requester(report.pay_by_link)
-    dp_requester(report.dp)
-    card_requester(report.card)
+    pay_by_link_requester(report.pay_by_link, False)
+    dp_requester(report.dp, False)
+    card_requester(report.card, False)
     app.last_payment_info.sort(key=get_date)
     return app.last_payment_info
 
 
 def try_id(pbl, dp, card):
-    if pbl[0].customer_id :
+    if pbl[0].customer_id:
         id_customer = pbl[0].customer_id
     elif dp[0].customer_id:
         id_customer = dp[0].customer_id
@@ -210,15 +190,19 @@ def try_id(pbl, dp, card):
     else:
         raise HTTPException(status_code=400)
 
-    for i in range(len(pbl)) :
-        if id_customer != pbl[i].customer_id:
+    pbl_len = len(pbl)
+    dp_len = len(dp)
+    card_len = len(card)
+    max_len = max(pbl_len, dp_len, card_len)
+
+    for i in range(max_len):
+        if i < pbl_len and pbl[i].customer_id != id_customer:
             raise HTTPException(status_code=400)
-    for i in range(len(dp)):
-        if id_customer != dp[i].customer_id:
+        if i < dp_len and dp[i].customer_id != id_customer:
             raise HTTPException(status_code=400)
-    for i in range(len(card)) :
-        if id_customer != card[i].customer_id:
+        if i < card_len and card[i].customer_id != id_customer:
             raise HTTPException(status_code=400)
+
     return id_customer
 
 
@@ -226,9 +210,9 @@ def try_id(pbl, dp, card):
 async def report_pay_id(report: RequestReport):
     app.last_payment_info = []
     app.customer_id = None
-    pay_by_link_requester(report.pay_by_link)
-    dp_requester(report.dp)
-    card_requester(report.card)
+    pay_by_link_requester(report.pay_by_link, True)
+    dp_requester(report.dp, True)
+    card_requester(report.card, True)
     app.last_payment_info.sort(key=get_date)
 
     app.customer_id = try_id(report.pay_by_link, report.dp, report.card)
