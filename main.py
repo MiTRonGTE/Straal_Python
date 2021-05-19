@@ -1,8 +1,9 @@
 # coding: utf-8
+# uvicorn main:app
 
-
+import string
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List  # Literal
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse
@@ -12,13 +13,11 @@ import json
 import urllib.request
 
 
-
-# uvicorn main:app
-
 app = FastAPI()
 
-app.id_payment_info = {}
 
+app.id_payment_info = {}
+app.acce_char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"
 app.all_response = []
 app.customer_id = None
 app.date_format = "%Y-%m-%dT%H:%M:%S%z"
@@ -32,7 +31,7 @@ async def validation_exception_handler(request, exc):
 class PayByLink(BaseModel):
     customer_id: Optional[PositiveInt] = None
     created_at: str
-    currency: Literal['EUR', 'USD', 'GBP', 'PLN']
+    currency: str  # Literal['EUR', 'USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     bank: str
@@ -41,7 +40,7 @@ class PayByLink(BaseModel):
 class Dp(BaseModel):
     customer_id: Optional[PositiveInt] = None
     created_at: str
-    currency: Literal['EUR', 'USD', 'GBP', 'PLN']
+    currency: str  # Literal['EUR', 'USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     iban: constr(max_length=22, min_length=22)
@@ -50,7 +49,7 @@ class Dp(BaseModel):
 class Card(BaseModel):
     customer_id: Optional[PositiveInt] = None
     created_at: str
-    currency: Literal['EUR', 'USD', 'GBP', 'PLN']
+    currency: str  # Literal['EUR', 'USD', 'GBP', 'PLN']
     amount: NonNegativeInt
     description: str
     cardholder_name: str
@@ -64,43 +63,17 @@ class RequestReport(BaseModel):
     card: Optional[List[Card]]
 
 
-def get_exchange_rate(currency, iso_date):
-    try:
-        if currency.upper() != "PLN":
-            short_date = iso_date[:10]
-
-            with urllib.request.urlopen(
-                    f"http://api.nbp.pl/api/exchangerates/rates/c/{currency}/{short_date}/?format=json") as url:
-                exchange_rate = json.loads(url.read().decode())
-                exchange_rate = exchange_rate.get("rates")[0].get("bid")
-                return exchange_rate
-        else:
-            return 1
-    except:
-        raise HTTPException(status_code=400)
-
-
-def get_date(dictionary):
-    return dictionary.get("date")
-
-
-def get_utc_time(created_at, fmt):
-    try:
-        iso_time = datetime.strptime(str(created_at), fmt)
-        date_utc = iso_time.astimezone(timezone('UTC'))
-        return date_utc.strftime(app.date_format).replace("+0000", "Z")
-    except:
-        raise HTTPException(status_code=400)
-
-
-def pay_by_link_requester(pbl_array, raport: bool):
+def pay_by_link_requester(pbl_array, raport=False):
     for i in range(len(pbl_array)):
         pbl = pbl_array[i]
+        if pbl.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
+            raise HTTPException(status_code=400)
+
         exchange_rate = get_exchange_rate(pbl.currency, pbl.created_at)
         utc_date = get_utc_time(pbl.created_at, app.date_format)
         try:
             converted_pbl = {}
-            if pbl.customer_id and raport == True:
+            if pbl.customer_id and raport:
                 converted_pbl["customer_id"] = pbl.customer_id
 
             converted_pbl.update({
@@ -117,15 +90,17 @@ def pay_by_link_requester(pbl_array, raport: bool):
             raise HTTPException(status_code=400)
 
 
-def dp_requester(dp_array, raport: bool):
+def dp_requester(dp_array, raport=False):
     for i in range(len(dp_array)):
         dp = dp_array[i]
+        if dp.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
+            raise HTTPException(status_code=400)
 
         exchange_rate = get_exchange_rate(dp.currency, dp.created_at)
         utc_date = get_utc_time(dp.created_at, app.date_format)
         try:
             converted_dp = {}
-            if dp.customer_id and raport == True:
+            if dp.customer_id and raport:
                 converted_dp["customer_id"] = dp.customer_id
             converted_dp.update({
                 "date": utc_date,
@@ -141,17 +116,24 @@ def dp_requester(dp_array, raport: bool):
             raise HTTPException(status_code=400)
 
 
-def card_requester(card_array, raport: bool):
-
+def card_requester(card_array, raport=False):
     for i in range(len(card_array)):
         card = card_array[i]
+
+        for name in [card.cardholder_name, card.cardholder_surname]:
+            for test in name:
+                if test not in app.acce_char:
+                    raise HTTPException(status_code=400)
+
+        if card.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
+            raise HTTPException(status_code=400)
 
         exchange_rate = get_exchange_rate(card.currency, card.created_at)
         utc_date = get_utc_time(card.created_at, app.date_format)
         try:
             int(card.card_number)
             converted_card = {}
-            if card.customer_id and raport == True:
+            if card.customer_id and raport:
                 converted_card["customer_id"] = card.customer_id
 
             converted_card.update({
@@ -168,16 +150,6 @@ def card_requester(card_array, raport: bool):
             app.last_payment_info.append(converted_card)
         except:
             raise HTTPException(status_code=400)
-
-
-@app.post("/report")
-async def report_post_func(report: RequestReport):
-    app.last_payment_info = []
-    pay_by_link_requester(report.pay_by_link, False)
-    dp_requester(report.dp, False)
-    card_requester(report.card, False)
-    app.last_payment_info.sort(key=get_date)
-    return app.last_payment_info
 
 
 def try_id(pbl, dp, card):
@@ -206,6 +178,44 @@ def try_id(pbl, dp, card):
     return id_customer
 
 
+def get_exchange_rate(currency, iso_date):
+    try:
+        if currency.upper() != "PLN":
+            short_date = iso_date[:10]
+            with urllib.request.urlopen(
+                    f"http://api.nbp.pl/api/exchangerates/rates/c/{currency}/{short_date}/?format=json") as url:
+                exchange_rate = json.loads(url.read().decode())
+                exchange_rate = exchange_rate.get("rates")[0].get("bid")
+                return exchange_rate
+        else:
+            return 1
+    except:
+        raise HTTPException(status_code=400)
+
+
+def get_date(dictionary):
+    return dictionary.get("date")
+
+
+def get_utc_time(created_at, fmt):
+    try:
+        iso_time = datetime.strptime(str(created_at), fmt)
+        date_utc = iso_time.astimezone(timezone('UTC'))
+        return date_utc.strftime(app.date_format).replace("+0000", "Z")
+    except:
+        raise HTTPException(status_code=400)
+
+
+@app.post("/report")
+async def report_post_func(report: RequestReport):
+    app.last_payment_info = []
+    pay_by_link_requester(report.pay_by_link)
+    dp_requester(report.dp)
+    card_requester(report.card)
+    app.last_payment_info.sort(key=get_date)
+    return app.last_payment_info
+
+
 @app.post("/customer-report")
 async def report_pay_id(report: RequestReport):
     app.last_payment_info = []
@@ -219,6 +229,7 @@ async def report_pay_id(report: RequestReport):
 
     app.id_payment_info[app.customer_id] = app.last_payment_info
     return app.last_payment_info
+
 
 @app.get("/customer-report/{customer_id}")
 def customer_report_id(customer_id: int):
