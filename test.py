@@ -28,7 +28,7 @@ report = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "GBP",
             "amount": 1000,
@@ -37,7 +37,6 @@ report = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 report_invalid_currency = {
     "pay_by_link": [{
             "customer_id": 1,
@@ -64,7 +63,7 @@ report_invalid_currency = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "customer_id": 1,
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "re",
@@ -74,7 +73,6 @@ report_invalid_currency = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 report_id_test1 = {
     "pay_by_link": [{
             "customer_id": 1,
@@ -101,7 +99,7 @@ report_id_test1 = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "customer_id": 1,
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "GBP",
@@ -111,7 +109,6 @@ report_id_test1 = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 report_id_test2 = {
     "pay_by_link": [{
             "customer_id": 456666666664654564,
@@ -138,7 +135,7 @@ report_id_test2 = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "customer_id": 456666666664654564,
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "GBP",
@@ -148,7 +145,6 @@ report_id_test2 = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 report_id_test2_1 = {
     "pay_by_link": [{
             "customer_id": 456666666664654564,
@@ -175,7 +171,7 @@ report_id_test2_1 = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "customer_id": 456666666664654564,
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "GBP",
@@ -185,7 +181,6 @@ report_id_test2_1 = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 report_id_test3 = {
     "pay_by_link": [{
             "customer_id": "string",
@@ -212,7 +207,7 @@ report_id_test3 = {
             "cardholder_name": "John",
             "cardholder_surname": "Doe",
             "card_number": "2222222222222222"
-        },{
+        }, {
             "customer_id": "string",
             "created_at": "2021-05-14T18:32:26Z",
             "currency": "GBP",
@@ -222,7 +217,6 @@ report_id_test3 = {
             "cardholder_surname": "Doe",
             "card_number": "1111111111111111"
         }]}
-
 response_body = [{
         "customer_id": 1,
         "date": "2021-05-13T07:00:05Z",
@@ -232,7 +226,7 @@ response_body = [{
         "currency": "PLN",
         "amount": 2450,
         "amount_in_pln": 2450
-    },{
+    }, {
         "customer_id": 1,
         "date": "2021-05-13T09:01:43Z",
         "type": "pay_by_link",
@@ -241,7 +235,7 @@ response_body = [{
         "currency": "EUR",
         "amount": 3000,
         "amount_in_pln": 13494
-    },{
+    }, {
         "customer_id": 1,
         "date": "2021-05-14T08:27:09Z",
         "type": "dp",
@@ -250,7 +244,7 @@ response_body = [{
         "currency": "USD",
         "amount": 599,
         "amount_in_pln": 2219
-    },{
+    }, {
         "customer_id": 1,
         "date": "2021-05-14T18:32:26Z",
         "type": "card",
@@ -260,7 +254,6 @@ response_body = [{
         "amount": 1000,
         "amount_in_pln": 5208
     }]
-
 report_pbl1 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -270,7 +263,6 @@ report_pbl1 = {
             "description": "Abonament na siłownię",
             "bank": "mbank"
         }]}
-
 report_pbl2 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -280,7 +272,6 @@ report_pbl2 = {
             "description": "Abonament na siłownię",
             "bank": "mbank"
         }]}
-
 report_pbl3 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -290,7 +281,6 @@ report_pbl3 = {
             "description": "Abonament na siłownię",
             "bank": "mbank"
         }]}
-
 report_pbl4 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -300,7 +290,6 @@ report_pbl4 = {
             "description": "Abonament na siłownię",
             "bank": "mbank"
         }]}
-
 report_pbl5 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -310,7 +299,6 @@ report_pbl5 = {
             "description": "Abonament na siłownię",
             "bank": "mbank"
         }]}
-
 report_pbl6 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -320,7 +308,6 @@ report_pbl6 = {
             "description": None,
             "bank": "mbank"
         }]}
-
 report_pbl7 = {
     "pay_by_link": [{
             "customer_id": 9999999999,
@@ -330,7 +317,6 @@ report_pbl7 = {
             "description": "Abonament na siłownię",
             "bank": None
         }]}
-
 response_pbl1 = [{
         "date": "2021-05-13T09:01:43Z",
         "type": "pay_by_link",
@@ -340,7 +326,6 @@ response_pbl1 = [{
         "amount": 3000,
         "amount_in_pln": 13494
     }]
-
 report_dp1 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -350,7 +335,6 @@ report_dp1 = {
         "description": "FastFood",
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp2 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -360,7 +344,6 @@ report_dp2 = {
         "description": "FastFood",
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp3 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -370,7 +353,6 @@ report_dp3 = {
         "description": "FastFood",
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp4 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -380,7 +362,6 @@ report_dp4 = {
         "description": "FastFood",
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp5 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -390,7 +371,6 @@ report_dp5 = {
         "description": "FastFood",
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp6 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -400,7 +380,6 @@ report_dp6 = {
         "description": None,
         "iban": "DE91100000000123456789"
     }]}
-
 report_dp7 = {
     "dp": [{
         "customer_id": 9999999999,
@@ -410,7 +389,6 @@ report_dp7 = {
         "description": "FastFood",
         "iban": None
     }]}
-
 response_dp1 = [{
         "date": "2021-05-14T08:27:09Z",
         "type": "dp",
@@ -420,7 +398,6 @@ response_dp1 = [{
         "amount": 599,
         "amount_in_pln": 2219
     }]
-
 report_card1 = {
     "card": [{
         "customer_id": 9999999999,
@@ -432,7 +409,6 @@ report_card1 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card2 = {
     "card": [{
         "customer_id": "string",
@@ -444,7 +420,6 @@ report_card2 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card3 = {
     "card": [{
         "customer_id": 9999999999,
@@ -456,7 +431,6 @@ report_card3 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card4 = {
     "card": [{
         "customer_id": 9999999999,
@@ -468,7 +442,6 @@ report_card4 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card5 = {
     "card": [{
         "customer_id": 9999999999,
@@ -480,7 +453,6 @@ report_card5 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card6 = {
     "card": [{
         "customer_id": 9999999999,
@@ -492,7 +464,6 @@ report_card6 = {
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}
-
 report_card7 = {
     "card": [{
         "customer_id": 9999999999,
@@ -504,7 +475,6 @@ report_card7 = {
         "cardholder_surname": None,
         "card_number": "2222222222222222"
     }]}
-
 report_card8 = {
     "card": [{
         "customer_id": 9999999999,
@@ -516,7 +486,6 @@ report_card8 = {
         "cardholder_surname": "Doe",
         "card_number": "2"
     }]}
-
 report_card9 = {
     "card": [{
         "customer_id": 9999999999,
@@ -528,7 +497,6 @@ report_card9 = {
         "cardholder_surname": "Doe",
         "card_number": "22string222222"
     }]}
-
 report_card10 = {
     "card": [{
         "customer_id": 9999999999,
@@ -540,7 +508,6 @@ report_card10 = {
         "cardholder_surname": "Doe",
         "card_number": None
     }]}
-
 response_card1 = [{
         "date": "2021-05-13T07:00:05Z",
         "type": "card",
@@ -579,6 +546,7 @@ def test_get_exchange_rate(currency: str, iso_date: str, value: float):
 def test_get_utc_time(created_at: str, date_utc: str):
     # testowanie przekształcania daty z iso8601 do UTC
     assert date_utc == get_utc_time(created_at, "%Y-%m-%dT%H:%M:%S%z")
+
 
 @pytest.mark.parametrize(
     ["report_test", 'value'],
@@ -629,6 +597,7 @@ def test_pay_by_link_requester(report_test, value):
 
     response = client.post("/report", json=report_card1)
     assert response.status_code == 200 and response.json() == response_card1
+
 
 @pytest.mark.parametrize(
     ["report_test", 'value'],
