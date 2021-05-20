@@ -1,5 +1,6 @@
 # coding: utf-8
 # uvicorn main:app
+# pytest test.py
 
 import string
 from datetime import datetime
@@ -69,8 +70,8 @@ def pay_by_link_requester(pbl_array, raport=False):
         if pbl.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        exchange_rate = get_exchange_rate(pbl.currency, pbl.created_at)
         utc_date = get_utc_time(pbl.created_at, app.date_format)
+        exchange_rate = get_exchange_rate(pbl.currency, utc_date)
         try:
             converted_pbl = {}
             if pbl.customer_id and raport:
@@ -96,8 +97,8 @@ def dp_requester(dp_array, raport=False):
         if dp.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        exchange_rate = get_exchange_rate(dp.currency, dp.created_at)
         utc_date = get_utc_time(dp.created_at, app.date_format)
+        exchange_rate = get_exchange_rate(dp.currency, utc_date)
         try:
             converted_dp = {}
             if dp.customer_id and raport:
@@ -128,8 +129,8 @@ def card_requester(card_array, raport=False):
         if card.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        exchange_rate = get_exchange_rate(card.currency, card.created_at)
         utc_date = get_utc_time(card.created_at, app.date_format)
+        exchange_rate = get_exchange_rate(card.currency, utc_date)
         try:
             int(card.card_number)
             converted_card = {}
@@ -178,15 +179,15 @@ def try_id(pbl, dp, card):
     return id_customer
 
 
-def get_exchange_rate(currency, iso_date):
+def get_exchange_rate(currency, utc_date):
     try:
         if currency.upper() != "PLN":
-            short_date = iso_date[:10]
+            short_date = utc_date[:10]
             with urllib.request.urlopen(
                     f"http://api.nbp.pl/api/exchangerates/rates/c/{currency}/{short_date}/?format=json") as url:
                 exchange_rate = json.loads(url.read().decode())
                 exchange_rate = exchange_rate.get("rates")[0].get("bid")
-                return exchange_rate
+                return float(exchange_rate)
         else:
             return 1
     except:
