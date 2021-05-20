@@ -123,32 +123,12 @@ CREATE TABLE PayByLink (
 );
 
 
-def card_requester(card_array, add_to_database = False):
-    for i in range(len(card_array)):
-        card = card_array[i]
+@app.on_event("startup")
+async def startup():
+    app.db_connection = sqlite3.connect("northwind.db")
+    app.db_connection.text_factory = lambda b: b.decode(errors="ignore")  # northwind specific
 
-        if add_to_database:
-            # add to database
 
-        exchange_rate = get_exchange_rate(card.currency, card.created_at)
-        utc_date = get_utc_time(card.created_at, app.date_format)
-        try:
-            int(card.card_number)
-            converted_card = {}
-            if card.customer_id:
-                converted_card["customer_id"] = card.customer_id
-
-            converted_card.update({
-                    "date": utc_date,
-                    "type": "card",
-                    "payment_mean": f"{card.cardholder_name.title()} {card.cardholder_surname.title()}"
-                                    f" {card.card_number[:4] + 8 * '*' + card.card_number[-4:]}",
-                    "description": card.description,
-                    "currency": card.currency.upper(),
-                    "amount": card.amount,
-                    "amount_in_pln": (int(card.amount) * exchange_rate) // 1,
-            })
-
-            app.last_payment_info.append(converted_card)
-        except:
-            raise HTTPException(status_code=400)
+@app.on_event("shutdown")
+async def shutdown():
+    app.db_connection.close()

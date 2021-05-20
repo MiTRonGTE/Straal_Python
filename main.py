@@ -18,10 +18,10 @@ app = FastAPI()
 
 
 app.id_payment_info = {}
-app.acce_char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"
+app.Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"
 app.all_response = []
 app.customer_id = None
-app.date_format = "%Y-%m-%dT%H:%M:%S%z"
+app.Date_Format = "%Y-%m-%dT%H:%M:%S%z"
 
 
 @app.exception_handler(RequestValidationError)
@@ -65,12 +65,14 @@ class RequestReport(BaseModel):
 
 
 def pay_by_link_requester(pbl_array, raport=False):
+    if pbl_array is None:
+        return
     for i in range(len(pbl_array)):
         pbl = pbl_array[i]
         if pbl.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        utc_date = get_utc_time(pbl.created_at, app.date_format)
+        utc_date = get_utc_time(pbl.created_at, app.Date_Format)
         exchange_rate = get_exchange_rate(pbl.currency, utc_date)
         try:
             converted_pbl = {}
@@ -92,12 +94,14 @@ def pay_by_link_requester(pbl_array, raport=False):
 
 
 def dp_requester(dp_array, raport=False):
+    if dp_array is None:
+        return
     for i in range(len(dp_array)):
         dp = dp_array[i]
         if dp.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        utc_date = get_utc_time(dp.created_at, app.date_format)
+        utc_date = get_utc_time(dp.created_at, app.Date_Format)
         exchange_rate = get_exchange_rate(dp.currency, utc_date)
         try:
             converted_dp = {}
@@ -118,18 +122,20 @@ def dp_requester(dp_array, raport=False):
 
 
 def card_requester(card_array, raport=False):
+    if card_array is None:
+        return
     for i in range(len(card_array)):
         card = card_array[i]
 
         for name in [card.cardholder_name, card.cardholder_surname]:
             for test in name:
-                if test not in app.acce_char:
+                if test not in app.Acce_Char:
                     raise HTTPException(status_code=400)
 
         if card.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
             raise HTTPException(status_code=400)
 
-        utc_date = get_utc_time(card.created_at, app.date_format)
+        utc_date = get_utc_time(card.created_at, app.Date_Format)
         exchange_rate = get_exchange_rate(card.currency, utc_date)
         try:
             int(card.card_number)
@@ -154,6 +160,8 @@ def card_requester(card_array, raport=False):
 
 
 def try_id(pbl, dp, card):
+    if pbl is None or dp is None or card is None:
+        return
     if pbl[0].customer_id:
         id_customer = pbl[0].customer_id
     elif dp[0].customer_id:
@@ -202,7 +210,7 @@ def get_utc_time(created_at, fmt):
     try:
         iso_time = datetime.strptime(str(created_at), fmt)
         date_utc = iso_time.astimezone(timezone('UTC'))
-        return date_utc.strftime(app.date_format).replace("+0000", "Z")
+        return date_utc.strftime(app.Date_Format).replace("+0000", "Z")
     except:
         raise HTTPException(status_code=400)
 
