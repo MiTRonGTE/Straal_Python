@@ -1,5 +1,7 @@
 ## Description 
 
+This application is simple http service that prepares report of client's transactions based on given data.
+
 ## Functionality
 
 * The application accepts a set of payment data from the customer. 
