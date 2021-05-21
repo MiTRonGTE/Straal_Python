@@ -17,7 +17,7 @@ app = FastAPI()
 
 
 id_payment_info = {}
-Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"  # znazki dozwolone w imieniu i nazwisku
+Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"  # znaki  dozwolone w imieniu i nazwisku
 customer_id = None
 Date_Format = "%Y-%m-%dT%H:%M:%S%z"  # format do jakiego ma być przekształcone created_at
 
@@ -28,20 +28,20 @@ async def validation_exception_handler(request, exc):
     return PlainTextResponse(str(exc), status_code=400)
 
 
-# funkcja przekształcająca pay_by_link dla klijenta
+# funkcja przekształcająca pay_by_link dla klienta
 def pay_by_link_requester(pbl_array, raport=False):
     # potwierdzenie czy został wysłany pbl
     if pbl_array is None:
         return
 
-    # odczyt kojenych pbl z listy pbl_array
+    # odczyt kolejnych pbl z listy pbl_array
     for i in range(len(pbl_array)):
         pbl = pbl_array[i]
 
         # walidacja currency (waluta)
         try_currency(pbl.currency)
 
-        # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
+        # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
         utc_date = get_utc_time(pbl.created_at, Date_Format)
         exchange_rate = get_exchange_rate(pbl.currency, utc_date)
 
@@ -65,20 +65,20 @@ def pay_by_link_requester(pbl_array, raport=False):
             raise HTTPException(status_code=400)
 
 
-# funkcja przekształcająca dp dla klijenta
+# funkcja przekształcająca dp dla klienta
 def dp_requester(dp_array, raport=False):
     # potwierdzenie czy został wysłany dp
     if dp_array is None:
         return
 
-    # odczyt kojenych dp z listy dp_array
+    # odczyt kolejnych dp z listy dp_array
     for i in range(len(dp_array)):
         dp = dp_array[i]
 
         # walidacja currency (waluta)
         try_currency(dp.currency)
 
-        # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
+        # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
         utc_date = get_utc_time(dp.created_at, Date_Format)
         exchange_rate = get_exchange_rate(dp.currency, utc_date)
 
@@ -101,13 +101,13 @@ def dp_requester(dp_array, raport=False):
             raise HTTPException(status_code=400)
 
 
-# funkcja przekształcająca card dla klijenta
+# funkcja przekształcająca card dla klienta
 def card_requester(card_array, raport=False):
     # potwierdzenie czy został wysłany dp
     if card_array is None:
         return
 
-    # odczyt kojenych card z listy card_array
+    # odczyt kolejnych card z listy card_array
     for i in range(len(card_array)):
         card = card_array[i]
 
@@ -120,7 +120,7 @@ def card_requester(card_array, raport=False):
         # walidacja currency (waluta)
         try_currency(card.currency)
 
-        # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
+        # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
         utc_date = get_utc_time(card.created_at, Date_Format)
         exchange_rate = get_exchange_rate(card.currency, utc_date)
 
@@ -152,7 +152,7 @@ def try_currency(currency):
         raise HTTPException(status_code=400)
 
 
-# potwierdzenie że wszystkie wysłane id klijenta są takie same a następnie zwrócenie id_customer
+# potwierdzenie że wszystkie wysłane id klienta są takie same a następnie zwrócenie id_customer
 def try_id(pbl, dp, card):
     if pbl is None or dp is None or card is None:
         return
@@ -198,12 +198,12 @@ def get_exchange_rate(currency, utc_date):
         raise HTTPException(status_code=400)
 
 
-# funkcja potrzebna do sortowania response'ów po dacie
+# funkcja potrzebna do sortowania response po dacie
 def get_date(dictionary):
     return dictionary.get("date")
 
 
-# funkcja zamieniająca date z formatu iso8061 do UTC
+# funkcja zmieniająca date z formatu iso 8061 do UTC
 def get_utc_time(created_at, fmt):
     try:
         iso_time = datetime.strptime(str(created_at), fmt)
