@@ -156,6 +156,7 @@ def try_currency(currency):
 def try_id(pbl, dp, card):
     if pbl is None or dp is None or card is None:
         return
+
     if pbl[0].customer_id:
         id_customer = pbl[0].customer_id
     elif dp[0].customer_id:
@@ -233,16 +234,16 @@ async def report_pay_id(report: RequestReport):
     card_requester(report.card, True)
     app.last_payment_info.sort(key=get_date)
 
-    customer_id = try_id(report.pay_by_link, report.dp, report.card)
+    c_id = try_id(report.pay_by_link, report.dp, report.card)
 
-    id_payment_info[customer_id] = app.last_payment_info
+    id_payment_info[c_id] = app.last_payment_info
     return app.last_payment_info
 
 
 # endpoint wyświetlający raport dla wskazanego id
-@app.get("/customer-report/{customer_id}")
-def customer_report_id(customer_id: int):
+@app.get("/customer-report/{cust_id}")
+def customer_report_id(cust_id: int):
     try:
-        return id_payment_info[customer_id]
+        return id_payment_info[cust_id]
     except:
         raise HTTPException(status_code=400)
