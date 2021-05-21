@@ -101,7 +101,7 @@ https://recruitment-task-straal.herokuapp.com/docs
     "type": pay_by_link,
     "payment_mean": string,
     "description": string,
-    "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”],
+    "currency": string,  # [“EUR”,”USD”, “GBP”, “PLN”]
     "amount": int,
     "amount_in_pln": int,
   },
@@ -111,7 +111,7 @@ https://recruitment-task-straal.herokuapp.com/docs
     "type": dp,
     "payment_mean": string,
     "description": string,
-    "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”],
+    "currency": string,  # [“EUR”,”USD”, “GBP”, “PLN”]
     "amount": int,
     "amount_in_pln": int,
   },
@@ -121,7 +121,7 @@ https://recruitment-task-straal.herokuapp.com/docs
     "type": card,
     "payment_mean": ‘cardholder_name cardholder_surname masked_card_number’ e.g ‘Jan Nowak 1111********1111’,
     "description": string,
-    "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”],
+    "currency": string,  # [“EUR”,”USD”, “GBP”, “PLN”]
     "amount": int,
     "amount_in_pln": int,
   }
