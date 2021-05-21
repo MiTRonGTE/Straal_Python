@@ -1,4 +1,6 @@
-## Descriptions 
+## Description 
+
+## Functionality
 
 * The application accepts a set of payment data from the customer. 
 * The data will be converted and returned. 
@@ -50,9 +52,9 @@ https://recruitment-task-straal.herokuapp.com/docs
 
 ## Endpoints
 
-- '/report'
-- '/customer-report'
-- '/customer-report/[customer_id]'
+- /report
+- /customer-report
+- /customer-report/[customer_id]
 
 ### Input
 
