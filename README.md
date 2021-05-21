@@ -1,4 +1,14 @@
-# descriptions 
+## Description 
+
+This application is simple http service that prepares report of client's transactions based on given data.
+
+## Functionality
+
+* The application accepts a set of payment data from the customer. 
+* The data will be converted and returned. 
+* The report will be sorted by date.
+* Data can be transferred to the customer ID. 
+* You can get the latest report with the customer ID.
 
 ## Used technologies
 * Python 3.8
@@ -20,7 +30,7 @@ Download source and requiremets.txt and in the terminal type in the root directo
 
 * port
 
-'http://127.0.0.1:8000/'
+http://127.0.0.1:8000/
 
 * docs
 
@@ -39,7 +49,14 @@ https://recruitment-task-straal.herokuapp.com/docs
 ## Pytest
 
 * to run all tests type in terminal:  
+
 `pytest test.py`
+
+## Endpoints
+
+- /report
+- /customer-report
+- /customer-report/[customer_id]
 
 ### Input
 
@@ -81,16 +98,6 @@ https://recruitment-task-straal.herokuapp.com/docs
   {
     "customer_id": Optional[PositiveInt],
     "date": string(date-time)
-    "type": card
-    "payment_mean": ‘cardholder_name cardholder_surname masked_card_number’ e.g ‘Jan Nowak 1111********1111’
-    "description": string
-    "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”]
-    "amount": int
-    "amount_in_pl"n: int
-  },
-  {
-    "customer_id": Optional[PositiveInt],
-    "date": string(date-time)
     "type": pay_by_link
     "payment_mean": string
     "description": string
@@ -107,6 +114,16 @@ https://recruitment-task-straal.herokuapp.com/docs
     "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”]
     "amount": int
     "amount_in_pln": int
+  },
+  {
+    "customer_id": Optional[PositiveInt],
+    "date": string(date-time)
+    "type": card
+    "payment_mean": ‘cardholder_name cardholder_surname masked_card_number’ e.g ‘Jan Nowak 1111********1111’
+    "description": string
+    "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”]
+    "amount": int
+    "amount_in_pl"n: int
   }
-]
-'''
+ ]
+    
