@@ -18,10 +18,10 @@ from raport_basemodel import *  # modele porzyjmowanych danych
 app = FastAPI()
 
 
-app.id_payment_info = {}
-app.Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"  # znazki dozwolone w imieniu i nazwisku
-app.customer_id = None
-app.Date_Format = "%Y-%m-%dT%H:%M:%S%z"  # format do jakiego ma być przekształcone created_at
+id_payment_info = {}
+Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"  # znazki dozwolone w imieniu i nazwisku
+customer_id = None
+Date_Format = "%Y-%m-%dT%H:%M:%S%z"  # format do jakiego ma być przekształcone created_at
 
 
 # zamiana błędu nieprawidłowych danych z 422 do 400
@@ -45,7 +45,7 @@ def pay_by_link_requester(pbl_array, raport=False):
             raise HTTPException(status_code=400)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
-        utc_date = get_utc_time(pbl.created_at, app.Date_Format)
+        utc_date = get_utc_time(pbl.created_at, Date_Format)
         exchange_rate = get_exchange_rate(pbl.currency, utc_date)
 
         # składanie response_pbl
@@ -83,7 +83,7 @@ def dp_requester(dp_array, raport=False):
             raise HTTPException(status_code=400)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
-        utc_date = get_utc_time(dp.created_at, app.Date_Format)
+        utc_date = get_utc_time(dp.created_at, Date_Format)
         exchange_rate = get_exchange_rate(dp.currency, utc_date)
 
         # składanie response_dp
@@ -118,7 +118,7 @@ def card_requester(card_array, raport=False):
         # walidacja cardholder_name i cardholder_surname czy nie zawierają niedozwolonych znaków
         for name in [card.cardholder_name, card.cardholder_surname]:
             for test in name:
-                if test not in app.Acce_Char:
+                if test not in Acce_Char:
                     raise HTTPException(status_code=400)
 
         # walidacja currency (waluta)
@@ -126,7 +126,7 @@ def card_requester(card_array, raport=False):
             raise HTTPException(status_code=400)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
-        utc_date = get_utc_time(card.created_at, app.Date_Format)
+        utc_date = get_utc_time(card.created_at, Date_Format)
         exchange_rate = get_exchange_rate(card.currency, utc_date)
 
         # składanie response_card
@@ -208,7 +208,7 @@ def get_utc_time(created_at, fmt):
     try:
         iso_time = datetime.strptime(str(created_at), fmt)
         date_utc = iso_time.astimezone(timezone('UTC'))
-        return date_utc.strftime(app.Date_Format).replace("+0000", "Z")
+        return date_utc.strftime(Date_Format).replace("+0000", "Z")
     except:
         raise HTTPException(status_code=400)
 
@@ -228,22 +228,22 @@ async def report_post_func(report: RequestReport):
 @app.post("/customer-report")
 async def report_pay_id(report: RequestReport):
     app.last_payment_info = []
-    app.customer_id = None
+    customer_id = None
     pay_by_link_requester(report.pay_by_link, True)
     dp_requester(report.dp, True)
     card_requester(report.card, True)
     app.last_payment_info.sort(key=get_date)
 
-    app.customer_id = try_id(report.pay_by_link, report.dp, report.card)
+    customer_id = try_id(report.pay_by_link, report.dp, report.card)
 
-    app.id_payment_info[app.customer_id] = app.last_payment_info
+    id_payment_info[customer_id] = app.last_payment_info
     return app.last_payment_info
 
 
-# # endpoint wyświetlający raport dla wskazanego id
+# endpoint wyświetlający raport dla wskazanego id
 @app.get("/customer-report/{customer_id}")
 def customer_report_id(customer_id: int):
     try:
-        return app.id_payment_info[customer_id]
+        return id_payment_info[customer_id]
     except:
         raise HTTPException(status_code=400)
