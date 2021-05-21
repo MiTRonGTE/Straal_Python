@@ -1,0 +1,55 @@
+aiofiles==0.5.0
+aniso8601==7.0.0
+async-exit-stack==1.0.1
+async-generator==1.10
+atomicwrites==1.4.0
+attrs==21.2.0
+certifi==2020.12.5
+cffi @ file:///C:/ci/cffi_1613247279197/work
+chardet==4.0.0
+click==7.1.2
+colorama @ file:///tmp/build/80754af9/colorama_1607707115595/work
+cryptography==2.9.2
+dnspython==2.1.0
+email-validator==1.1.2
+fastapi==0.65.1
+graphene==2.1.8
+graphql-core==2.3.2
+graphql-relay==2.0.1
+greenlet @ file:///C:/ci/greenlet_1611958565931/work
+h11==0.12.0
+idna @ file:///tmp/build/80754af9/idna_1609784788857/work
+inflect @ file:///C:/ci/inflect_1614797407862/work
+iniconfig @ file:///home/linux1/recipes/ci/iniconfig_1610983019677/work
+iso8601==0.1.14
+itsdangerous==1.1.0
+Jinja2==2.11.3
+MarkupSafe==2.0.0
+more-itertools @ file:///tmp/build/80754af9/more-itertools_1613676688952/work
+orjson==3.5.2
+packaging @ file:///tmp/build/80754af9/packaging_1611952188834/work
+pluggy @ file:///C:/ci/pluggy_1615976358795/work
+promise==2.3
+py @ file:///tmp/build/80754af9/py_1607971587848/work
+pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
+pydantic==1.8.2
+PyJWT @ file:///C:/ci/pyjwt_1619651841937/work
+pyparsing @ file:///home/linux1/recipes/ci/pyparsing_1610983426697/work
+pytest==6.2.4
+python-dotenv==0.17.1
+python-multipart==0.0.5
+pytz==2021.1
+PyYAML==5.4.1
+requests==2.25.1
+Rx==1.6.1
+six==1.16.0
+SQLAlchemy @ file:///C:/ci/sqlalchemy_1620712610212/work
+starlette==0.14.2
+toml @ file:///tmp/build/80754af9/toml_1616166611790/work
+typing-extensions==3.10.0.0
+ujson==4.0.2
+urllib3==1.26.4
+uvicorn==0.13.4
+watchgod==0.7
+websockets==8.1
+wincertstore==0.2

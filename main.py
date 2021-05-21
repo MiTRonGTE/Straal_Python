@@ -4,11 +4,9 @@
 
 import string
 from datetime import datetime
-from typing import Optional, List  # Literal
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse
-from pydantic import BaseModel, constr, NonNegativeInt, PositiveInt
 from pytz import timezone
 import json
 import urllib.request
@@ -41,8 +39,7 @@ def pay_by_link_requester(pbl_array, raport=False):
         pbl = pbl_array[i]
 
         # walidacja currency (waluta)
-        if pbl.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
-            raise HTTPException(status_code=400)
+        try_currency(pbl.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
         utc_date = get_utc_time(pbl.created_at, Date_Format)
@@ -79,8 +76,7 @@ def dp_requester(dp_array, raport=False):
         dp = dp_array[i]
 
         # walidacja currency (waluta)
-        if dp.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
-            raise HTTPException(status_code=400)
+        try_currency(dp.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
         utc_date = get_utc_time(dp.created_at, Date_Format)
@@ -122,8 +118,7 @@ def card_requester(card_array, raport=False):
                     raise HTTPException(status_code=400)
 
         # walidacja currency (waluta)
-        if card.currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
-            raise HTTPException(status_code=400)
+        try_currency(card.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danygo dnia
         utc_date = get_utc_time(card.created_at, Date_Format)
@@ -150,6 +145,11 @@ def card_requester(card_array, raport=False):
             app.last_payment_info.append(converted_card)
         except:
             raise HTTPException(status_code=400)
+
+
+def try_currency(currency):
+    if currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
+        raise HTTPException(status_code=400)
 
 
 # potwierdzenie że wszystkie wysłane id klijenta są takie same a następnie zwrócenie id_customer
@@ -228,7 +228,6 @@ async def report_post_func(report: RequestReport):
 @app.post("/customer-report")
 async def report_pay_id(report: RequestReport):
     app.last_payment_info = []
-    customer_id = None
     pay_by_link_requester(report.pay_by_link, True)
     dp_requester(report.dp, True)
     card_requester(report.card, True)
