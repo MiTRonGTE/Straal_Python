@@ -48,7 +48,7 @@ https://recruitment-task-straal.herokuapp.com/docs
 
 `pytest test.py`
 
-## Endpointu
+## Endpoints
 
 - '/report'
 - '/customer-report'
