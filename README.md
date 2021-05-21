@@ -26,7 +26,7 @@ Download source and requiremets.txt and in the terminal type in the root directo
 
 * port
 
-'http://127.0.0.1:8000/'
+http://127.0.0.1:8000/
 
 * docs
 
