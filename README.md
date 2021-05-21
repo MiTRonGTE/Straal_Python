@@ -65,7 +65,7 @@ https://recruitment-task-straal.herokuapp.com/docs
   pay_by_link: [{
     "customer_id": Optional[PositiveInt],
     "created_at": string(date-time)
-    "currenc"y: string
+    "currency": string
     "amount": NonNegativeInt
     "description": string
     "bank": string
@@ -85,7 +85,7 @@ https://recruitment-task-straal.herokuapp.com/docs
     "amount": NonNegativeInt
     "description": string
     "cardholder_name": string
-    "cardholder_surname"": string
+    "cardholder_surname": string
     "card_number": constr(max_length=16, min_length=16)
   }]
   }
@@ -123,7 +123,7 @@ https://recruitment-task-straal.herokuapp.com/docs
     "description": string
     "currency": string  # [“EUR”,”USD”, “GBP”, “PLN”]
     "amount": int
-    "amount_in_pl"n: int
+    "amount_in_pln": int
   }
  ]
     
