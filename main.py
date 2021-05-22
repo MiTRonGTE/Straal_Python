@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse
 from pytz import timezone
 import json
 import urllib.request
@@ -208,6 +208,17 @@ def get_utc_time(created_at, fmt):
         return date_utc.strftime(Date_Format).replace("+0000", "Z")
     except:
         raise HTTPException(status_code=400)
+
+
+@app.get("/", response_class=HTMLResponse)
+def root():
+    return """
+    <h1 style="color: #5e9ca0;"><span style="color: #666699;">Kamil Pawlicki</span></h1>
+        <ul>
+            <li><strong>Github</strong> - <a href="https://github.com/MiTRonGTE/Straal_Python">https://github.com/MiTRonGTE/Straal_Python</a></li>
+            <li><strong>Heroku</strong> - <a href="https://recruitment-task-straal.herokuapp.com/">https://recruitment-task-straal.herokuapp.com/</a></li>
+        </ul>
+    """
 
 
 # endpoint pobierajacy dane o płatnością i konwertuje je do raportu
