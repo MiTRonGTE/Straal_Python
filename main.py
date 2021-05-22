@@ -248,9 +248,9 @@ async def report_pay_id(report: RequestReport):
 
 
 # endpoint wyświetlający raport dla wskazanego id
-@app.get("/customer-report/{cust_id}")
-def customer_report_id(cust_id: int):
+@app.get("/customer-report/{customer_id}")
+def customer_report_id(customer_id: int):
     try:
-        return id_payment_info[cust_id]
+        return id_payment_info[customer_id]
     except:
         raise HTTPException(status_code=400)
