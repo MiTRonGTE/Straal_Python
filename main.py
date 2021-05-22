@@ -1,6 +1,4 @@
 # coding: utf-8
-# uvicorn main:app
-# pytest test.py
 
 import string
 from datetime import datetime
@@ -154,8 +152,6 @@ def try_currency(currency):
 
 # potwierdzenie że wszystkie wysłane id klienta są takie same a następnie zwrócenie id_customer
 def try_id(pbl, dp, card):
-    if pbl is None or dp is None or card is None:
-        return
 
     if pbl[0].customer_id:
         id_customer = pbl[0].customer_id
