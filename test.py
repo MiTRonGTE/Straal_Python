@@ -434,7 +434,7 @@ report_card1 = {
         "currency": "PLN",
         "amount": 2450,
         "description": "REF123457",
-        "cardholder_name": "John",
+        "cardholder_name": "Johną",
         "cardholder_surname": "Doe",
         "card_number": "2222222222222222"
     }]}

@@ -1,23 +1,18 @@
 # coding: utf-8
 
 import string
-from datetime import datetime
-from fastapi import FastAPI, HTTPException
+
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse, HTMLResponse
-from pytz import timezone
-import json
-import urllib.request
-from raport_basemodel import *  # modele porzyjmowanych danych
-
+from models import *
+from utils import *
 
 app = FastAPI()
 
-
 id_payment_info = {}
-Acce_Char = string.ascii_letters + "ńŃśŚćĆóÓżŻźŹęĘąĄłŁ '-"  # znaki  dozwolone w imieniu i nazwisku
+Acce_Char = string.ascii_letters + " '-"  # znaki  dozwolone w imieniu i nazwisku
 customer_id = None
-Date_Format = "%Y-%m-%dT%H:%M:%S%z"  # format do jakiego ma być przekształcone created_at
 
 
 # zamiana błędu nieprawidłowych danych z 422 do 400
@@ -40,7 +35,7 @@ def pay_by_link_requester(pbl_array, raport=False):
         try_currency(pbl.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
-        utc_date = get_utc_time(pbl.created_at, Date_Format)
+        utc_date = get_utc_time(pbl.created_at)
         exchange_rate = get_exchange_rate(pbl.currency, utc_date)
 
         # składanie response_pbl
@@ -77,7 +72,7 @@ def dp_requester(dp_array, raport=False):
         try_currency(dp.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
-        utc_date = get_utc_time(dp.created_at, Date_Format)
+        utc_date = get_utc_time(dp.created_at)
         exchange_rate = get_exchange_rate(dp.currency, utc_date)
 
         # składanie response_dp
@@ -119,7 +114,7 @@ def card_requester(card_array, raport=False):
         try_currency(card.currency)
 
         # przekonwertowanie daty do UTC i pobranie waluty z danego dnia
-        utc_date = get_utc_time(card.created_at, Date_Format)
+        utc_date = get_utc_time(card.created_at)
         exchange_rate = get_exchange_rate(card.currency, utc_date)
 
         # składanie response_card
@@ -143,11 +138,6 @@ def card_requester(card_array, raport=False):
             app.last_payment_info.append(converted_card)
         except:
             raise HTTPException(status_code=400)
-
-
-def try_currency(currency):
-    if currency.upper() not in ['EUR', 'USD', 'GBP', 'PLN']:
-        raise HTTPException(status_code=400)
 
 
 # potwierdzenie że wszystkie wysłane id klienta są takie same a następnie zwrócenie id_customer
@@ -178,41 +168,10 @@ def try_id(pbl, dp, card):
     return id_customer
 
 
-# funkcja pobierająca pojedyńczą walute z danego dnia
-# funkcja łączy się z http://api.nbp.pl/
-def get_exchange_rate(currency, utc_date):
-    try:
-        if currency.upper() != "PLN":
-            short_date = utc_date[:10]
-            with urllib.request.urlopen(
-                    f"http://api.nbp.pl/api/exchangerates/rates/c/{currency}/{short_date}/?format=json") as url:
-                exchange_rate = json.loads(url.read().decode())
-                exchange_rate = exchange_rate.get("rates")[0].get("bid")
-                return float(exchange_rate)
-        else:
-            return 1
-    except:
-        raise HTTPException(status_code=400)
-
-
-# funkcja potrzebna do sortowania response po dacie
-def get_date(dictionary):
-    return dictionary.get("date")
-
-
-# funkcja zmieniająca date z formatu iso 8061 do UTC
-def get_utc_time(created_at, fmt):
-    try:
-        iso_time = datetime.strptime(str(created_at), fmt)
-        date_utc = iso_time.astimezone(timezone('UTC'))
-        return date_utc.strftime(Date_Format).replace("+0000", "Z")
-    except:
-        raise HTTPException(status_code=400)
-
-
 @app.get("/", response_class=HTMLResponse)
 def root():
     return """
+    <title> Straal Python Kamil Pawlicki Recruitment Task</title>
     <h1 style="color: #5e9ca0;"><span style="color: #666699;">Kamil Pawlicki</span></h1>
         <ul>
             <li><strong>Github</strong> - <a href="https://github.com/MiTRonGTE/Straal_Python">https://github.com/MiTRonGTE/Straal_Python</a></li>
