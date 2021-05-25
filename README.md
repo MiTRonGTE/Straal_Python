@@ -1,3 +1,5 @@
+# Kamil Pawlicki
+
 ## Description 
 
 This application is simple http service that prepares report of client's transactions based on given data.
